@@ -27,12 +27,18 @@ func main() {
 	defer conn.Close()
 
 	buffer := make([]byte, BUFFER_SIZE)
-	_, err = conn.Read(buffer)
-	if err != nil {
-		fmt.Println("Error reading from connection: ", err.Error())
-	}
+	for {
+		n, err := conn.Read(buffer)
 
-	conn.Write([]byte("$4\r\nPONG\r\n"))
+		if n == 0 {
+			break
+		}
+		if err != nil {
+			fmt.Println("Error reading from connection: ", err.Error())
+		}
+
+		conn.Write([]byte("$4\r\nPONG\r\n"))
+	}
 
 	conn.Close()
 
