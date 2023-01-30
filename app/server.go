@@ -32,7 +32,7 @@ func main() {
 		fmt.Println("Error reading from connection: ", err.Error())
 	}
 
-	conn.Write([]byte("+PONG"))
+	conn.Write([]byte("$4\r\nPONG\r\n"))
 
 	conn.Close()
 
