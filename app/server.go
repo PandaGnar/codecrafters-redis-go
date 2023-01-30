@@ -7,19 +7,33 @@ import (
 )
 
 const PORT string = ":6379"
+const BUFFER_SIZE int = 512
 
 func main() {
-	l, err := net.Listen("tcp", PORT)
+	ln, err := net.Listen("tcp", PORT)
+	if err != nil {
+		fmt.Println("Error binding port: ", err.Error())
+		os.Exit(1)
+		return
+	}
+	defer ln.Close()
+
+	conn, err := ln.Accept()
 	if err != nil {
 		fmt.Println("Error accepting connection: ", err.Error())
 		os.Exit(1)
 		return
 	}
-	_, err = l.Accept()
+	defer conn.Close()
+
+	buffer := make([]byte, BUFFER_SIZE)
+	_, err = conn.Read(buffer)
 	if err != nil {
-		fmt.Println(err)
-		os.Exit(1)
-		return
+		fmt.Println("Error reading from connection: ", err.Error())
 	}
-	defer l.Close()
+
+	conn.Write([]byte("+PONG"))
+
+	conn.Close()
+
 }
